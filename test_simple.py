@@ -298,13 +298,13 @@ class SimpleParticleTracker2D:
         particle_counter = 1
         
         # Process tracked particles with progress bar
-        total_particles = sum(len(particle_data['tilts']) for particle_data in tracked_particles.values())
+        total_particles = sum(len(particle_info['tilts']) for particle_info in tracked_particles.values())
         
         with tqdm(total=total_particles, desc="Creating particle data") as pbar:
-            for particle_id, particle_data in tracked_particles.items():
-                ptlind = particle_data['ptlind']
+            for particle_id, particle_info in tracked_particles.items():
+                ptlind = particle_info['ptlind']
                 
-                for tilt_angle, (x, y) in particle_data['tilts'].items():
+                for tilt_angle, (x, y) in particle_info['tilts'].items():
                     # Create particle object
                     particle = {
                         "particle_index": particle_counter,
