@@ -44,10 +44,8 @@ mkdir -p "$BUILD_DIR"
 echo "📦 Building container from recipe: $RECIPE_FILE"
 echo "🏗️  This may take 30-60 minutes depending on your system..."
 
-cd "$BUILD_DIR"
-
-# Build the container (use just the filename since we're now in the apptainer directory)
-apptainer build --fakeroot "$CONTAINER_NAME" "pyp.def"
+# Build the container from the root directory, specifying the recipe file path
+apptainer build --fakeroot "$BUILD_DIR/$CONTAINER_NAME" "$RECIPE_FILE"
 
 if [ $? -eq 0 ]; then
     echo "✅ Container built successfully!"
@@ -66,8 +64,6 @@ else
     echo "❌ Container build failed!"
     exit 1
 fi
-
-cd ..
 
 echo ""
 echo "🎉 Container build complete!"

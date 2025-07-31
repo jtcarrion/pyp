@@ -8,31 +8,31 @@ IncludeCmd: no
 %files
 
 	# Copy essential files only
-	../src/ /opt/pyp
-	../test.py /opt/pyp/
-	../create_example_data.py /opt/pyp/
-	../LICENSE  /opt/pyp
-	../README.rst /opt/pyp
-	../README.md /opt/pyp/
-	../nextpyp.toml /opt/pyp
-	../pyproject.toml /opt/pyp
-	../tests/ /opt/pyp
-	../external/ /opt/pyp
-	../config/ /opt/pyp
+	src/ /opt/pyp
+	test.py /opt/pyp/
+	create_example_data.py /opt/pyp/
+	LICENSE  /opt/pyp
+	README.rst /opt/pyp
+	README.md /opt/pyp/
+	nextpyp.toml /opt/pyp
+	pyproject.toml /opt/pyp
+	tests/ /opt/pyp
+	external/ /opt/pyp
+	config/ /opt/pyp
 	# Copy bin files individually to avoid symlink issues
-	../bin/3davg /opt/pyp/bin/
-	../bin/byp /opt/pyp/bin/
-	../bin/csp /opt/pyp/bin/
-	../bin/fyp /opt/pyp/bin/
-	../bin/gyp /opt/pyp/bin/
-	../bin/pcl /opt/pyp/bin/
-	../bin/pex /opt/pyp/bin/
-	../bin/pmk /opt/pyp/bin/
-	../bin/prl /opt/pyp/bin/
-	../bin/psp /opt/pyp/bin/
-	../bin/pyp /opt/pyp/bin/
-	../bin/rlp /opt/pyp/bin/
-	../bin/streampyp /opt/pyp/bin/
+	bin/3davg /opt/pyp/bin/
+	bin/byp /opt/pyp/bin/
+	bin/csp /opt/pyp/bin/
+	bin/fyp /opt/pyp/bin/
+	bin/gyp /opt/pyp/bin/
+	bin/pcl /opt/pyp/bin/
+	bin/pex /opt/pyp/bin/
+	bin/pmk /opt/pyp/bin/
+	bin/prl /opt/pyp/bin/
+	bin/psp /opt/pyp/bin/
+	bin/pyp /opt/pyp/bin/
+	bin/rlp /opt/pyp/bin/
+	bin/streampyp /opt/pyp/bin/
 
 %environment
 
