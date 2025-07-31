@@ -529,6 +529,7 @@ class ParticleTracker2D:
             "csp_UseImagesForRefinementMin": 0,
             "csp_UseImagesForRefinementMax": -1,
             "csp_refine_micrographs": True,
+            "csp_refine_particles": True,
             "csp_refine_ctf": False,
             "csp_refine_shift": True,
             "csp_refine_angle": True,
