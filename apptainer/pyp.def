@@ -10,7 +10,7 @@ IncludeCmd: no
 	# Copy essential files only
 	src/ /opt/pyp
 	test.py /opt/pyp/
-	create_example_data.py /opt/pyp/
+	# create_example_data.py /opt/pyp/  # Temporarily commented out
 	LICENSE  /opt/pyp
 	README.rst /opt/pyp
 	README.md /opt/pyp/
