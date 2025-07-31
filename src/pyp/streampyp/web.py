@@ -7,7 +7,7 @@ from asyncio.log import logger
 import os
 import sys
 import re
-from collections import namedtuple
+from collections.abc import namedtuple
 from json import dumps as serialize
 import pathlib
 

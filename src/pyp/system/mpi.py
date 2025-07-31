@@ -2,7 +2,7 @@ import os
 import sys
 import subprocess
 import numpy as np
-from collections import Callable
+from collections.abc import Callable
 from joblib import Parallel, delayed
 import contextlib
 import joblib
