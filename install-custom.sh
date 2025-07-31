@@ -377,8 +377,8 @@ test_installation() {
     print_info "Testing installation..."
     
     # Test container
-    if [ -f "pyp/apptainer/$CONTAINER_NAME" ]; then
-        print_success "Container found: pyp/apptainer/$CONTAINER_NAME"
+    if [ -f "apptainer/$CONTAINER_NAME" ]; then
+        print_success "Container found: apptainer/$CONTAINER_NAME"
     else
         print_error "Container not found"
         exit 1
