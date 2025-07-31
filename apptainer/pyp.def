@@ -13,7 +13,6 @@ IncludeCmd: no
 	# create_example_data.py /opt/pyp/  # Temporarily commented out
 	LICENSE  /opt/pyp
 	README.rst /opt/pyp
-	README.md /opt/pyp/
 	nextpyp.toml /opt/pyp
 	pyproject.toml /opt/pyp
 	tests/ /opt/pyp
