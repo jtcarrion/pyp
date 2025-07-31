@@ -3,7 +3,7 @@ import math
 import multiprocessing
 import os
 import subprocess
-from collections.abc import deque
+from collections import deque
 
 import numpy as np
 

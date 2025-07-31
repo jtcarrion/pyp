@@ -1,5 +1,5 @@
 import time
-from collections.abc import namedtuple
+from collections import namedtuple
 
 from pymongo import MongoClient
 
