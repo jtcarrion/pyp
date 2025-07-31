@@ -20,9 +20,9 @@ set -e  # Exit on any error
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-INSTALL_DIR="${PYP_INSTALL_DIR:-/nfs/data/apps/PYP_CUSTOM}"
+INSTALL_DIR="${PYP_INSTALL_DIR:-$HOME/software/pyp-custom-install}"
 CONTAINER_NAME="pyp_2d_tomo.sif"
-GIT_REPO="${PYP_GIT_REPO:-https://github.com/your-username/pyp.git}"
+GIT_REPO="${PYP_GIT_REPO:-$SCRIPT_DIR}"
 GIT_BRANCH="${PYP_GIT_BRANCH:-main}"
 
 # Colors for output
@@ -68,8 +68,8 @@ OPTIONS:
     --git-branch    Custom Git branch
 
 ENVIRONMENT VARIABLES:
-    PYP_INSTALL_DIR    Installation directory (default: /nfs/data/apps/PYP_CUSTOM)
-    PYP_GIT_REPO       Git repository URL
+    PYP_INSTALL_DIR    Installation directory (default: ~/software/pyp-custom-install)
+    PYP_GIT_REPO       Git repository URL (default: current directory)
     PYP_GIT_BRANCH     Git branch to use
 
 EXAMPLES:
@@ -132,7 +132,7 @@ setup_installation_directory() {
 }
 
 clone_repository() {
-    print_info "Cloning Git repository: $GIT_REPO (branch: $GIT_BRANCH)"
+    print_info "Setting up repository from: $GIT_REPO"
     
     if [ -d "pyp" ]; then
         print_warning "Repository directory already exists"
@@ -150,14 +150,24 @@ clone_repository() {
         fi
     fi
     
-    # Clone repository
-    git clone --branch "$GIT_BRANCH" "$GIT_REPO" pyp
-    
-    if [ $? -eq 0 ]; then
-        print_success "Repository cloned successfully"
+    # If using current directory, copy it instead of cloning
+    if [ "$GIT_REPO" = "$SCRIPT_DIR" ]; then
+        print_info "Copying current directory to pyp/"
+        cp -r "$SCRIPT_DIR" pyp
+        # Remove the pyp directory from inside pyp to avoid recursion
+        rm -rf pyp/pyp
+        print_success "Repository copied successfully"
     else
-        print_error "Failed to clone repository"
-        exit 1
+        # Clone repository
+        print_info "Cloning Git repository: $GIT_REPO (branch: $GIT_BRANCH)"
+        git clone --branch "$GIT_BRANCH" "$GIT_REPO" pyp
+        
+        if [ $? -eq 0 ]; then
+            print_success "Repository cloned successfully"
+        else
+            print_error "Failed to clone repository"
+            exit 1
+        fi
     fi
 }
 
