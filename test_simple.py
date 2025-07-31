@@ -395,8 +395,8 @@ class SimpleParticleTracker2D:
         report = {
             'validation_results': self.validation_results,
             'summary': {
-                'total_particles': len(self.validation_results.get('tracked_particles', {}).get('num_particles', 0)),
-                'total_tilts': len(self.validation_results.get('tracked_particles', {}).get('unique_tilts', 0)),
+                'total_particles': self.validation_results.get('tracked_particles', {}).get('num_particles', 0),
+                'total_tilts': self.validation_results.get('tracked_particles', {}).get('unique_tilts', 0),
                 'coverage': self._calculate_coverage(),
                 'consistency': self._check_consistency()
             }
