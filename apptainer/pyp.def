@@ -54,7 +54,7 @@ IncludeCmd: no
 		
 	# Make the custom scripts executable
 	chmod +x /opt/pyp/test.py
-	chmod +x /opt/pyp/create_example_data.py
+	# chmod +x /opt/pyp/create_example_data.py  # Commented out since file not copied
 	
 	# install packages required by ETTK
 	apt-get -y update
