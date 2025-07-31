@@ -20,7 +20,7 @@ set -e  # Exit on any error
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-INSTALL_DIR="${PYP_INSTALL_DIR:-$HOME/software/pyp-custom-install}"
+INSTALL_DIR="${PYP_INSTALL_DIR:-$(pwd)}"
 CONTAINER_NAME="pyp_2d_tomo.sif"
 GIT_REPO="${PYP_GIT_REPO:-$SCRIPT_DIR}"
 GIT_BRANCH="${PYP_GIT_BRANCH:-main}"
@@ -68,7 +68,7 @@ OPTIONS:
     --git-branch    Custom Git branch
 
 ENVIRONMENT VARIABLES:
-    PYP_INSTALL_DIR    Installation directory (default: ~/software/pyp-custom-install)
+    PYP_INSTALL_DIR    Installation directory (default: current directory)
     PYP_GIT_REPO       Git repository URL (default: current directory)
     PYP_GIT_BRANCH     Git branch to use
 
@@ -112,6 +112,13 @@ check_dependencies() {
 }
 
 setup_installation_directory() {
+    # If using current directory as repository, install in-place
+    if [ "$GIT_REPO" = "$SCRIPT_DIR" ]; then
+        print_info "Installing in current directory: $(pwd)"
+        print_success "Installation directory ready"
+        return
+    fi
+    
     print_info "Setting up installation directory: $INSTALL_DIR"
     
     if [ -d "$INSTALL_DIR" ] && [ "$FORCE" != "true" ]; then
