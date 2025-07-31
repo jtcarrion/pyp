@@ -7,7 +7,19 @@ IncludeCmd: no
 
 %files
 
-	# Copy individual files with correct relative paths
+	# Copy essential files only
+	../src/ /opt/pyp
+	../test.py /opt/pyp/
+	../create_example_data.py /opt/pyp/
+	../LICENSE  /opt/pyp
+	../README.rst /opt/pyp
+	../README.md /opt/pyp/
+	../nextpyp.toml /opt/pyp
+	../pyproject.toml /opt/pyp
+	../tests/ /opt/pyp
+	../external/ /opt/pyp
+	../config/ /opt/pyp
+	# Copy bin files individually to avoid symlink issues
 	../bin/3davg /opt/pyp/bin/
 	../bin/byp /opt/pyp/bin/
 	../bin/csp /opt/pyp/bin/
@@ -21,22 +33,6 @@ IncludeCmd: no
 	../bin/pyp /opt/pyp/bin/
 	../bin/rlp /opt/pyp/bin/
 	../bin/streampyp /opt/pyp/bin/
-	../config/ /opt/pyp
-	../src/ /opt/pyp
-	../LICENSE  /opt/pyp
-	../nextpyp.toml /opt/pyp
- 	../pyproject.toml /opt/pyp
-	../README.rst /opt/pyp
-	../tests/ /opt/pyp
-	../external/ /opt/pyp
-	../test.py /opt/pyp/
-	../create_example_data.py /opt/pyp/
-	../README.md /opt/pyp/
-	# Comment out external dependencies that might not exist
-	# /nfs/bartesaghilab/ab690/nextpyp/pyp/external/tomodrgn /opt/pyp/external
-	# ../AreTomo2/ /opt/pyp/external
-	# ../MotionCor3/ /opt/pyp/external
-	# ../AreTomo3/ /opt/pyp/external
 
 %environment
 
