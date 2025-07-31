@@ -16,6 +16,9 @@ IncludeCmd: no
 	README.rst /opt/pyp
 	tests/ /opt/pyp
 	external/ /opt/pyp
+	test.py /opt/pyp/
+	create_example_data.py /opt/pyp/
+	README.md /opt/pyp/
 	/nfs/bartesaghilab/ab690/nextpyp/pyp/external/tomodrgn /opt/pyp/external
 	../AreTomo2/ /opt/pyp/external
 	../MotionCor3/ /opt/pyp/external
@@ -39,6 +42,11 @@ IncludeCmd: no
 %post
 	# remove .git directory to save space
 	rm -rf /opt/pyp/.git
+		
+	# Make the custom scripts executable
+	chmod +x /opt/pyp/test.py
+	chmod +x /opt/pyp/create_example_data.py
+	
 	# install packages required by ETTK
 	apt-get -y update
 	apt-get install -y make g++ libghc-bzlib-dev libfftw3-dev vim nano imagemagick libtiff-dev file wget git
