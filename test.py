@@ -509,7 +509,7 @@ class ParticleTracker2D:
     
     def run_cspt_refinement(self, parameter_file: str, output_dir: str):
         """
-        Task 4: Run parallelized CSPT refinement
+        Task 4: Run CSPT refinement using PYP's natural workflow
         
         Parameters
         ----------
@@ -543,40 +543,32 @@ class ParticleTracker2D:
         # Create output directory
         os.makedirs(output_dir, exist_ok=True)
         
-        # Import CSPT functions
-        from pyp.refine.csp.particle_cspt import prepare_particle_cspt, run_merge
-        from pyp.refine.frealign.frealign import frealign_iterate
-        
         try:
             # Load parameter file
             alignment_parameters = Parameters.from_file(parameter_file)
             
-            # Prepare CSPT
+            # Use PYP's natural CSPT workflow
+            from pyp.refine.csp import cspty
+            
             logger.info("Preparing CSPT particle processing...")
-            split_parx_list = prepare_particle_cspt(
-                name="test_dataset",
-                parameter_file=parameter_file,
+            
+            # Call CSPT using PYP's standard interface
+            cspty.run_cspt_refinement(
                 alignment_parameters=alignment_parameters,
                 parameters=cspt_parameters,
-                grids=[4, 4, 1],  # 2D grids
+                name="test_dataset",
+                current_path=os.getcwd(),
+                working_path=output_dir,
                 use_frames=False
             )
-            
-            logger.info(f"Created {len(split_parx_list)} split parameter files")
-            
-            # Run Frealign iteration
-            logger.info("Running Frealign iteration...")
-            frealign_iterate(cspt_parameters, cspt_parameters, 2)
-            
-            # Run merge
-            logger.info("Running merge...")
-            run_merge(input_dir="scratch")
             
             logger.info("CSPT refinement completed successfully!")
             
         except Exception as e:
             logger.error(f"Error during CSPT refinement: {e}")
             raise
+    
+
     
     def generate_quality_report(self) -> Dict:
         """
