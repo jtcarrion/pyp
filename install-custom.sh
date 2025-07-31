@@ -134,33 +134,15 @@ setup_installation_directory() {
 clone_repository() {
     print_info "Setting up repository from: $GIT_REPO"
     
-    if [ -d "pyp" ]; then
-        print_warning "Repository directory already exists"
-        if [ "$FORCE" = "true" ]; then
-            rm -rf pyp
-        else
-            read -p "Do you want to remove existing repository? (y/N): " -n 1 -r
-            echo
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
-                rm -rf pyp
-            else
-                print_info "Using existing repository"
-                return
-            fi
-        fi
-    fi
-    
-    # If using current directory, copy it instead of cloning
+    # If using current directory, we're already in the right place
     if [ "$GIT_REPO" = "$SCRIPT_DIR" ]; then
-        print_info "Copying current directory to pyp/"
-        cp -r "$SCRIPT_DIR" pyp
-        # Remove the pyp directory from inside pyp to avoid recursion
-        rm -rf pyp/pyp
-        print_success "Repository copied successfully"
+        print_info "Using current directory as repository"
+        print_success "Repository ready"
+        return
     else
-        # Clone repository
+        # Clone repository directly into current directory
         print_info "Cloning Git repository: $GIT_REPO (branch: $GIT_BRANCH)"
-        git clone --branch "$GIT_BRANCH" "$GIT_REPO" pyp
+        git clone --branch "$GIT_BRANCH" "$GIT_REPO" .
         
         if [ $? -eq 0 ]; then
             print_success "Repository cloned successfully"
@@ -178,8 +160,6 @@ build_container() {
     fi
     
     print_info "Building custom Apptainer container..."
-    
-    cd pyp
     
     # Check if build script exists
     if [ ! -f "build_container.sh" ]; then
@@ -212,8 +192,6 @@ build_container() {
         print_error "Container build failed"
         exit 1
     fi
-    
-    cd ..
 }
 
 create_launcher_scripts() {
@@ -228,7 +206,7 @@ create_launcher_scripts() {
 # Custom PYP launcher with 2D-based tomography support
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONTAINER_PATH="$SCRIPT_DIR/../pyp/apptainer/pyp_2d_tomo.sif"
+CONTAINER_PATH="$SCRIPT_DIR/../apptainer/pyp_2d_tomo.sif"
 
 if [ ! -f "$CONTAINER_PATH" ]; then
     echo "Error: Container not found at $CONTAINER_PATH"
@@ -246,7 +224,7 @@ EOF
 # Custom 2D-based tomography workflow launcher
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONTAINER_PATH="$SCRIPT_DIR/../pyp/apptainer/pyp_2d_tomo.sif"
+CONTAINER_PATH="$SCRIPT_DIR/../apptainer/pyp_2d_tomo.sif"
 
 if [ ! -f "$CONTAINER_PATH" ]; then
     echo "Error: Container not found at $CONTAINER_PATH"
@@ -264,7 +242,7 @@ EOF
 # Hybrid workflow launcher (outside + inside container)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONTAINER_PATH="$SCRIPT_DIR/../pyp/apptainer/pyp_2d_tomo.sif"
+CONTAINER_PATH="$SCRIPT_DIR/../apptainer/pyp_2d_tomo.sif"
 
 if [ ! -f "$CONTAINER_PATH" ]; then
     echo "Error: Container not found at $CONTAINER_PATH"
@@ -273,7 +251,7 @@ if [ ! -f "$CONTAINER_PATH" ]; then
 fi
 
 # Execute hybrid workflow
-python3 "$SCRIPT_DIR/../pyp/test_hybrid.py" --container-path "$CONTAINER_PATH" "$@"
+python3 "$SCRIPT_DIR/../test_hybrid.py" --container-path "$CONTAINER_PATH" "$@"
 EOF
 
     # Make launchers executable
@@ -425,7 +403,7 @@ show_completion_message() {
 ====================================
 
 Installation Directory: $INSTALL_DIR
-Container: pyp/apptainer/$CONTAINER_NAME
+Container: apptainer/$CONTAINER_NAME
 
 🚀 Available Commands:
   ./bin/pyp          # Standard PYP functionality
