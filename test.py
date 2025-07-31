@@ -548,17 +548,19 @@ class ParticleTracker2D:
             alignment_parameters = Parameters.from_file(parameter_file)
             
             # Use PYP's natural CSPT workflow
-            from pyp.refine.csp import cspty
+            from pyp.align.core import csp_run_refinement
             
             logger.info("Preparing CSPT particle processing...")
             
             # Call CSPT using PYP's standard interface
-            cspty.run_cspt_refinement(
+            csp_run_refinement(
                 alignment_parameters=alignment_parameters,
                 parameters=cspt_parameters,
+                dataset="test_dataset",
                 name="test_dataset",
+                current_class=1,
+                iteration=1,
                 current_path=os.getcwd(),
-                working_path=output_dir,
                 use_frames=False
             )
             
