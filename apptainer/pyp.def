@@ -134,31 +134,32 @@ IncludeCmd: no
 	# add symlink to cuda library needed by MotionCor3 and AreTomo
 	ln -s /usr/local/cuda-12.5/targets/x86_64-linux/lib/stubs/libcuda.so /usr/local/cuda-12.5/targets/x86_64-linux/lib/stubs/libcuda.so.1
 
-	# load AreTomo2
-	cd /opt/pyp/external/AreTomo2
-	# git clone https://github.com/czimaginginstitute/AreTomo2.git --depth 1
-	# cd AreTomo2
-	rm -rf .git/
-	make exe -f makefile11 CUDAHOME=${CUDA_HOME} CUDALIB=/usr/local/cuda-12.5/targets/x86_64-linux/lib/stubs -j 4
-	find . ! -name "AreTomo2" -type f -exec rm -f {} \;
-	cd -
+	# Comment out external tools that require external dependencies
+	# # load AreTomo2
+	# cd /opt/pyp/external/AreTomo2
+	# # git clone https://github.com/czimaginginstitute/AreTomo2.git --depth 1
+	# # cd AreTomo2
+	# rm -rf .git/
+	# make exe -f makefile11 CUDAHOME=${CUDA_HOME} CUDALIB=/usr/local/cuda-12.5/targets/x86_64-linux/lib/stubs -j 4
+	# find . ! -name "AreTomo2" -type f -exec rm -f {} \;
+	# cd -
 
+	# # cd /opt/pyp/external/AreTomo3
+	# # git clone https://github.com/czimaginginstitute/AreTomo3.git --depth 1
 	# cd /opt/pyp/external/AreTomo3
-	# git clone https://github.com/czimaginginstitute/AreTomo3.git --depth 1
-	cd /opt/pyp/external/AreTomo3
-	rm -rf .git/
-	make exe -f makefile11 CUDAHOME=${CUDA_HOME} CUDALIB=/usr/local/cuda-12.5/targets/x86_64-linux/lib/stubs -j 4
-	find . ! -name "AreTomo3" -type f -exec rm -f {} \;
-	cd -
+	# rm -rf .git/
+	# make exe -f makefile11 CUDAHOME=${CUDA_HOME} CUDALIB=/usr/local/cuda-12.5/targets/x86_64-linux/lib/stubs -j 4
+	# find . ! -name "AreTomo3" -type f -exec rm -f {} \;
+	# cd -
 
-	# git clone https://github.com/czimaginginstitute/MotionCor3.git --depth 1
-	# cd MotionCor3
-	cd /opt/pyp/external/MotionCor3
-	# git clone https://github.com/czimaginginstitute/AreTomo2.git
-	rm -rf .git/
-	make exe -f makefile11 CUDAHOME=${CUDA_HOME} CUDALIB=/usr/local/cuda-12.5/targets/x86_64-linux/lib/stubs -j 4
-	find . ! -name "MotionCor3" -type f -exec rm -f {} \;
-	cd -
+	# # git clone https://github.com/czimaginginstitute/MotionCor3.git --depth 1
+	# # cd MotionCor3
+	# cd /opt/pyp/external/MotionCor3
+	# # git clone https://github.com/czimaginginstitute/AreTomo2.git
+	# rm -rf .git/
+	# make exe -f makefile11 CUDAHOME=${CUDA_HOME} CUDALIB=/usr/local/cuda-12.5/targets/x86_64-linux/lib/stubs -j 4
+	# find . ! -name "MotionCor3" -type f -exec rm -f {} \;
+	# cd -
 
 	# Conda is apparently a terrible package manager and
 	# totally fails to install 2 packages (two!!) in less than 30 minutes! (didn't try waiting longer...)
