@@ -35,6 +35,23 @@ import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 
+def convert_numpy_types(obj):
+    """Convert NumPy types to native Python types for JSON serialization"""
+    if isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, dict):
+        return {key: convert_numpy_types(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(item) for item in obj]
+    elif isinstance(obj, tuple):
+        return tuple(convert_numpy_types(item) for item in obj)
+    else:
+        return obj
+
 # Add PYP to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
@@ -660,7 +677,9 @@ def main():
         # Generate quality report
         logger.info("=== Generating Quality Report ===")
         quality_report = tracker.generate_quality_report()
-        logger.info(f"Quality Report: {json.dumps(quality_report, indent=2)}")
+        # Convert NumPy types to native Python types for JSON serialization
+        quality_report_serializable = convert_numpy_types(quality_report)
+        logger.info(f"Quality Report: {json.dumps(quality_report_serializable, indent=2)}")
         
         # Task 4: Run CSPT refinement
         logger.info("=== Task 4: Running CSPT refinement ===")
