@@ -7,7 +7,20 @@ IncludeCmd: no
 
 %files
 
-	bin/* /opt/pyp/bin/
+	# Copy individual files instead of using wildcards
+	bin/3davg /opt/pyp/bin/
+	bin/byp /opt/pyp/bin/
+	bin/csp /opt/pyp/bin/
+	bin/fyp /opt/pyp/bin/
+	bin/gyp /opt/pyp/bin/
+	bin/pcl /opt/pyp/bin/
+	bin/pex /opt/pyp/bin/
+	bin/pmk /opt/pyp/bin/
+	bin/prl /opt/pyp/bin/
+	bin/psp /opt/pyp/bin/
+	bin/pyp /opt/pyp/bin/
+	bin/rlp /opt/pyp/bin/
+	bin/streampyp /opt/pyp/bin/
 	config/ /opt/pyp
 	src/ /opt/pyp
 	LICENSE  /opt/pyp
@@ -19,10 +32,11 @@ IncludeCmd: no
 	test.py /opt/pyp/
 	create_example_data.py /opt/pyp/
 	README.md /opt/pyp/
-	/nfs/bartesaghilab/ab690/nextpyp/pyp/external/tomodrgn /opt/pyp/external
-	../AreTomo2/ /opt/pyp/external
-	../MotionCor3/ /opt/pyp/external
-	../AreTomo3/ /opt/pyp/external
+	# Comment out external dependencies that might not exist
+	# /nfs/bartesaghilab/ab690/nextpyp/pyp/external/tomodrgn /opt/pyp/external
+	# ../AreTomo2/ /opt/pyp/external
+	# ../MotionCor3/ /opt/pyp/external
+	# ../AreTomo3/ /opt/pyp/external
 
 %environment
 
