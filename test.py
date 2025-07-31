@@ -552,6 +552,7 @@ class ParticleTracker2D:
             "csp_refine_beam_tilt_angle_angle_y": False,
             "csp_refine_beam_tilt_angle_angle_z": False,
             "csp_refine_beam_tilt_angle_angle_angle": False,
+            "csp_GridSearch": False,
             "refine_iter": 2,
             "refine_maxiter": 5,
             "refine_metric": "new",
@@ -566,6 +567,13 @@ class ParticleTracker2D:
         
         # Create output directory
         os.makedirs(output_dir, exist_ok=True)
+        
+        # Set PYP environment variables
+        os.environ["PYP_SCRATCH"] = "/tmp/pyp_scratch"
+        os.environ["PYP_DIR"] = os.path.dirname(os.path.abspath(__file__))
+        
+        # Create scratch directory
+        os.makedirs(os.environ["PYP_SCRATCH"], exist_ok=True)
         
         try:
             # Load parameter file
