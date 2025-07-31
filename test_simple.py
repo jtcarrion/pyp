@@ -117,14 +117,14 @@ class SimpleParticleTracker2D:
             # Set frame to 0 for all particles (average across frames)
             allboxes[:, 2] = 0
             
-            # Store validation results
-            self.validation_results['allbox'] = {
-                'num_particles': len(allboxes),
-                'x_range': (np.min(allboxes[:, 0]), np.max(allboxes[:, 0])),
-                'y_range': (np.min(allboxes[:, 1]), np.max(allboxes[:, 1])),
-                'tilt_range': (np.min(allboxes[:, 3]), np.max(allboxes[:, 3])),
-                'unique_tilts': len(np.unique(allboxes[:, 3]))
-            }
+                    # Store validation results
+        self.validation_results['allbox'] = {
+            'num_particles': int(len(allboxes)),
+            'x_range': (float(np.min(allboxes[:, 0])), float(np.max(allboxes[:, 0]))),
+            'y_range': (float(np.min(allboxes[:, 1])), float(np.max(allboxes[:, 1]))),
+            'tilt_range': (float(np.min(allboxes[:, 3])), float(np.max(allboxes[:, 3]))),
+            'unique_tilts': int(len(np.unique(allboxes[:, 3])))
+        }
             
             logger.info(f"Loaded {len(allboxes)} particles from allbox file")
             logger.info(f"Coordinate ranges: X={self.validation_results['allbox']['x_range']}, "
@@ -188,10 +188,10 @@ class SimpleParticleTracker2D:
             
             # Store validation results
             self.validation_results['tracked_particles'] = {
-                'num_particles': len(tracked_particles),
-                'num_positions': total_positions,
-                'unique_tilts': len(all_tilt_angles),
-                'tilt_range': (min(all_tilt_angles), max(all_tilt_angles))
+                'num_particles': int(len(tracked_particles)),
+                'num_positions': int(total_positions),
+                'unique_tilts': int(len(all_tilt_angles)),
+                'tilt_range': (float(min(all_tilt_angles)), float(max(all_tilt_angles)))
             }
             
             return True
