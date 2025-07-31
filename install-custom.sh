@@ -190,6 +190,18 @@ build_container() {
     # Make build script executable
     chmod +x build_container.sh
     
+    # Check if apptainer directory exists
+    if [ ! -d "apptainer" ]; then
+        print_error "apptainer directory not found in repository"
+        exit 1
+    fi
+    
+    # Check if recipe file exists
+    if [ ! -f "apptainer/pyp.def" ]; then
+        print_error "apptainer/pyp.def not found in repository"
+        exit 1
+    fi
+    
     # Build container
     print_info "Building container (this may take 30-60 minutes)..."
     ./build_container.sh

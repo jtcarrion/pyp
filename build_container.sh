@@ -1,10 +1,8 @@
 #!/bin/bash
-"""
-Build Apptainer Container with Custom 2D-Based Tomography Code
-=============================================================
-
-This script rebuilds the PYP Apptainer container with your custom code included.
-"""
+# Build Apptainer Container with Custom 2D-Based Tomography Code
+# =============================================================
+#
+# This script rebuilds the PYP Apptainer container with your custom code included.
 
 set -e  # Exit on any error
 
@@ -13,11 +11,22 @@ CONTAINER_NAME="pyp_2d_tomo.sif"
 RECIPE_FILE="apptainer/pyp.def"
 BUILD_DIR="apptainer"
 
+# Get the script directory to handle relative paths
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 echo "🔨 Building Apptainer container with 2D-based tomography code..."
 
 # Check if we're in the right directory
 if [ ! -f "$RECIPE_FILE" ]; then
     echo "❌ Error: Recipe file not found at $RECIPE_FILE"
+    echo "Current directory: $(pwd)"
+    echo "Looking for: $RECIPE_FILE"
+    echo "Available files in current directory:"
+    ls -la
+    echo ""
+    echo "Available files in apptainer directory:"
+    ls -la apptainer/ 2>/dev/null || echo "apptainer directory not found"
+    echo ""
     echo "Please run this script from the project root directory"
     exit 1
 fi
