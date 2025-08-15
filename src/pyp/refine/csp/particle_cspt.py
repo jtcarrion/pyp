@@ -256,30 +256,39 @@ def prepare_particle_cspt(
 
     particle_parameters: dict = alignment_parameters.get_extended_data().get_particles()
 
+    # New flag: allow running without 3D coordinates by splitting per particle using 2D tracks
+    use_2d_tracks_only = bool(parameters.get("csp_no_3d_points", False))
+
     if "tomo" in parameters["data_mode"].lower():
 
-        binning = parameters["tomo_rec_binning"]
-        tomox, tomoy, tomoz = metadata["tomo"].at[0, "x"] * binning, metadata["tomo"].at[0, "y"] * binning, metadata["tomo"].at[0, "z"] * binning
+        if use_2d_tracks_only:
+            # Bypass 3D bounds; split per particle. Corners/sizes are ignored when per_particle=True
+            ptlidx_regions_list = sort_particles_regions(
+                particle_parameters, corners_squares=[], squaresize=[], per_particle=True
+            )
+        else:
+            binning = parameters["tomo_rec_binning"]
+            tomox, tomoy, tomoz = metadata["tomo"].at[0, "x"] * binning, metadata["tomo"].at[0, "y"] * binning, metadata["tomo"].at[0, "z"] * binning
 
-        # find out the bounds of the specimen (where particles are actually located)
-        bottom_left_corner, top_right_corner = findSpecimenBounds(
-            particle_parameters, [tomox, tomoy, tomoz]
-        )
+            # find out the bounds of the specimen (where particles are actually located)
+            bottom_left_corner, top_right_corner = findSpecimenBounds(
+                particle_parameters, [tomox, tomoy, tomoz]
+            )
 
-        # divide the specimen into several sub-regions
-        corners, size_region = divide2regions(
-            bottom_left_corner, top_right_corner, split_x=grids[0], split_y=grids[1], split_z=grids[2],
-        )
+            # divide the specimen into several sub-regions
+            corners, size_region = divide2regions(
+                bottom_left_corner, top_right_corner, split_x=grids[0], split_y=grids[1], split_z=grids[2],
+            )
 
-        # sort particles into sub-regions
-        if parameters["csp_frame_refinement"] and use_frames:
-            per_particle = True
-        else: 
-            per_particle = False
-        
-        ptlidx_regions_list = sort_particles_regions(
-            particle_parameters, corners, size_region, per_particle
-        )
+            # sort particles into sub-regions
+            if parameters["csp_frame_refinement"] and use_frames:
+                per_particle = True
+            else: 
+                per_particle = False
+            
+            ptlidx_regions_list = sort_particles_regions(
+                particle_parameters, corners, size_region, per_particle
+            )
 
     else:
         """
@@ -1863,3 +1872,154 @@ def classmerge_succeed(parameters: dict) -> bool:
                     )
 
     return False
+
+def create_cistem_from_2d_tracks(
+    name: str,
+    track_data: dict,
+    parameters: dict,
+    output_dir: str = ".",
+) -> tuple[str, str]:
+    """Create .cistem parameter files from 2D track data for tilt-series refinement.
+    
+    This function creates the required .cistem and _extended.cistem files needed for
+    CSPT refinement using only 2D particle tracks across tilted micrographs.
+    
+    Parameters
+    ----------
+    name : str
+        Name of the tilt-series (e.g., "ts001")
+    track_data : dict
+        Dictionary containing 2D track information:
+        - 'particles': dict[int, dict] - particle data keyed by particle ID
+        - 'tilts': dict[int, dict] - tilt data keyed by tilt index
+        - 'projections': list[dict] - list of projection data for each particle-tilt pair
+    parameters : dict
+        PYP parameters dictionary
+    output_dir : str, optional
+        Output directory for the .cistem files, by default "."
+        
+    Returns
+    -------
+    tuple[str, str]
+        Paths to the created .cistem and _extended.cistem files
+        
+    Example
+    -------
+    track_data = {
+        'particles': {
+            1: {'x_3d': 0.0, 'y_3d': 0.0, 'z_3d': 0.0},  # 3D coords can be zero-filled
+            2: {'x_3d': 0.0, 'y_3d': 0.0, 'z_3d': 0.0},
+        },
+        'tilts': {
+            0: {'angle': -60.0, 'defocus': 2.5},
+            1: {'angle': -45.0, 'defocus': 2.5},
+            2: {'angle': 0.0, 'defocus': 2.5},
+        },
+        'projections': [
+            {'pind': 1, 'tind': 0, 'shift_x': 10.5, 'shift_y': -5.2, 'score': 0.8, 'occupancy': 1.0},
+            {'pind': 1, 'tind': 1, 'shift_x': 12.1, 'shift_y': -4.8, 'score': 0.7, 'occupancy': 1.0},
+            {'pind': 2, 'tind': 0, 'shift_x': -8.3, 'shift_y': 15.6, 'score': 0.9, 'occupancy': 1.0},
+            # ... more projections
+        ]
+    }
+    """
+    from pyp.inout.metadata.frealign_parfile import Parameters, ExtendedParameters
+    from pyp.inout.metadata.cistem_star_file import Tilt, Particle
+    
+    # Create Parameters object for projection data
+    par_obj = Parameters()
+    
+    # Build projection data array from track_data['projections']
+    projection_rows = []
+    for proj in track_data['projections']:
+        pind = proj['pind']
+        tind = proj['tind']
+        
+        # Get particle and tilt info
+        particle = track_data['particles'][pind]
+        tilt = track_data['tilts'][tind]
+        
+        # Create a projection row with required columns
+        # Column order follows frealign parameter file format
+        row = [
+            pind,                    # PIND - particle index
+            tind,                    # TIND - tilt index  
+            0,                       # RIND - region index (will be set by CSPT)
+            proj.get('shift_x', 0.0), # SHIFT_X - 2D shift from track
+            proj.get('shift_y', 0.0), # SHIFT_Y - 2D shift from track
+            0.0,                     # SHIFT_Z - not used for 2D
+            0.0,                     # PSI - rotation angle
+            0.0,                     # THETA - tilt angle  
+            0.0,                     # PHI - rotation angle
+            0.0,                     # DEFOCUS - will be set from tilt data
+            0.0,                     # DEFOCUS_ANGLE
+            0.0,                     # PHASE_SHIFT
+            0.0,                     # FILM_ID
+            0.0,                     # IMAGE_IS_ACTIVE
+            proj.get('score', 0.0),  # SCORE
+            proj.get('occupancy', 1.0), # OCCUPANCY
+            proj.get('logp', 0.0),   # LOGP
+            proj.get('sigma', 1.0),  # SIGMA
+            proj.get('score_change', 0.0), # SCORE_CHANGE
+            proj.get('pixel_error', 0.0),  # PIXEL_ERROR
+            proj.get('defocus_change', 0.0), # DEFOCUS_CHANGE
+            proj.get('psi_change', 0.0),     # PSI_CHANGE
+            proj.get('theta_change', 0.0),   # THETA_CHANGE
+            proj.get('phi_change', 0.0),     # PHI_CHANGE
+            proj.get('shift_x_change', 0.0), # SHIFT_X_CHANGE
+            proj.get('shift_y_change', 0.0), # SHIFT_Y_CHANGE
+            proj.get('shift_z_change', 0.0), # SHIFT_Z_CHANGE
+            proj.get('tilt_angle', tilt.get('angle', 0.0)), # TILT_ANGLE
+            proj.get('tilt_axis_angle', 0.0), # TILT_AXIS_ANGLE
+            proj.get('defocus_1', tilt.get('defocus', 0.0)), # DEFOCUS_1
+            proj.get('defocus_2', tilt.get('defocus', 0.0)), # DEFOCUS_2
+            proj.get('defocus_angle', 0.0),  # DEFOCUS_ANGLE
+            proj.get('phase_shift', 0.0),    # PHASE_SHIFT
+            proj.get('amplitude_contrast', 0.1), # AMPLITUDE_CONTRAST
+            proj.get('micrograph_name', f"{name}_t{tind:02d}"), # MICROGRAPH_NAME
+            proj.get('micrograph_path', ""), # MICROGRAPH_PATH
+        ]
+        projection_rows.append(row)
+    
+    # Convert to numpy array and set data
+    projection_data = np.array(projection_rows, dtype=float)
+    par_obj.set_data(projection_data)
+    
+    # Create ExtendedParameters object
+    ext_obj = ExtendedParameters()
+    
+    # Build particles dictionary
+    particles_dict = {}
+    for pind, particle_data in track_data['particles'].items():
+        particle = Particle()
+        particle.particle_index = pind
+        particle.x_position_3d = particle_data.get('x_3d', 0.0)
+        particle.y_position_3d = particle_data.get('y_3d', 0.0) 
+        particle.z_position_3d = particle_data.get('z_3d', 0.0)
+        particles_dict[pind] = particle
+    
+    # Build tilts dictionary
+    tilts_dict = {}
+    for tind, tilt_data in track_data['tilts'].items():
+        tilt = Tilt()
+        tilt.tilt_index = tind
+        tilt.angle = tilt_data.get('angle', 0.0)
+        tilt.defocus = tilt_data.get('defocus', 0.0)
+        tilt.region_index = 0  # Will be set by CSPT
+        tilts_dict[tind] = {0: tilt}  # Nested dict structure expected by ExtendedParameters
+    
+    # Set extended data
+    ext_obj.set_data(particles=particles_dict, tilts=tilts_dict)
+    
+    # Write files
+    cistem_file = os.path.join(output_dir, f"{name}_r01.cistem")
+    extended_file = os.path.join(output_dir, f"{name}_r01_extended.cistem")
+    
+    par_obj.to_binary(cistem_file)
+    ext_obj.to_binary(extended_file)
+    
+    logger.info(f"Created .cistem files for {name}:")
+    logger.info(f"  - {cistem_file} ({len(projection_rows)} projections)")
+    logger.info(f"  - {extended_file} ({len(particles_dict)} particles, {len(tilts_dict)} tilts)")
+    
+    return cistem_file, extended_file
