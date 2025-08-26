@@ -15,6 +15,7 @@ from tqdm import tqdm
 
 import numpy as np
 import pickle
+from typing import Tuple, Dict, List, Optional, Union
 
 from pyp.analysis import plot, statistics
 from pyp.analysis.geometry import divide2regions, findSpecimenBounds, get_tomo_binning
@@ -1875,10 +1876,10 @@ def classmerge_succeed(parameters: dict) -> bool:
 
 def create_cistem_from_2d_tracks(
     name: str,
-    track_data: dict,
-    parameters: dict,
-    output_dir: str = ".",
-) -> tuple[str, str]:
+    track_data: Dict,
+    parameters: Dict,
+    output_dir: str = "."
+) -> Tuple[str, str]:
     """Create .cistem parameter files from 2D track data for tilt-series refinement.
     
     This function creates the required .cistem and _extended.cistem files needed for
@@ -1888,40 +1889,20 @@ def create_cistem_from_2d_tracks(
     ----------
     name : str
         Name of the tilt-series (e.g., "ts001")
-    track_data : dict
+    track_data : Dict
         Dictionary containing 2D track information:
         - 'particles': dict[int, dict] - particle data keyed by particle ID
         - 'tilts': dict[int, dict] - tilt data keyed by tilt index
         - 'projections': list[dict] - list of projection data for each particle-tilt pair
-    parameters : dict
+    parameters : Dict
         PYP parameters dictionary
     output_dir : str, optional
         Output directory for the .cistem files, by default "."
         
     Returns
     -------
-    tuple[str, str]
+    Tuple[str, str]
         Paths to the created .cistem and _extended.cistem files
-        
-    Example
-    -------
-    track_data = {
-        'particles': {
-            1: {'x_3d': 0.0, 'y_3d': 0.0, 'z_3d': 0.0},  # 3D coords can be zero-filled
-            2: {'x_3d': 0.0, 'y_3d': 0.0, 'z_3d': 0.0},
-        },
-        'tilts': {
-            0: {'angle': -60.0, 'defocus': 2.5},
-            1: {'angle': -45.0, 'defocus': 2.5},
-            2: {'angle': 0.0, 'defocus': 2.5},
-        },
-        'projections': [
-            {'pind': 1, 'tind': 0, 'shift_x': 10.5, 'shift_y': -5.2, 'score': 0.8, 'occupancy': 1.0},
-            {'pind': 1, 'tind': 1, 'shift_x': 12.1, 'shift_y': -4.8, 'score': 0.7, 'occupancy': 1.0},
-            {'pind': 2, 'tind': 0, 'shift_x': -8.3, 'shift_y': 15.6, 'score': 0.9, 'occupancy': 1.0},
-            # ... more projections
-        ]
-    }
     """
     from pyp.inout.metadata.frealign_parfile import Parameters, ExtendedParameters
     from pyp.inout.metadata.cistem_star_file import Tilt, Particle

@@ -1,0 +1,23 @@
+# Custom PYP Configuration for 2D-Based Tomography
+
+[pyp]
+scratch = "/tmp/pyp_scratch"
+binds = ["/nfs", "/cifs", "/data"]
+
+# 2D-based tomography specific settings
+[tomo]
+data_mode = "tomo"
+csp_Grid = "4,4,1"
+csp_frame_range = "1,1"
+z_position_3d = 0
+
+# CSPT refinement settings
+[csp]
+enable_constraints = true
+use_ptlind = true
+spatial_partitioning = true
+
+# Performance settings
+[performance]
+parallel_processing = true
+memory_efficient = true
